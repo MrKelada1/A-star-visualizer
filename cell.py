@@ -55,8 +55,10 @@ class Cell:
                 self.color = pygame.Color("white")
             case "path":
                 self.color = pygame.Color("gold")
-            # case "close":
-            #     self.color = pygame.Color("blue")
+            case "close":
+                self.color = pygame.Color("blue")
+            case "open":
+                self.color = pygame.Color("pink")
             case _:
                 self.state = "error"
                 self.color = pygame.Color("purple")
