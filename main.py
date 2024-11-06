@@ -62,6 +62,7 @@ def update_neighbors(start_cell):
                 if neighbour.state != "unwalkable" and neighbour not in closed_set:
                     mat[y][x].calc_f(start_cell)
                     heapq.heappush(open_set, mat[y][x])
+                    mat[y][x].set_state("open")
 
 
 def find_next_cell(cur_cell):
@@ -72,10 +73,9 @@ def find_next_cell(cur_cell):
     :param cur_cell: current cell
     :return:
     """
-
     # add cell to the closed set
     heapq.heappush(closed_set, cur_cell)
-    # mat[cur_cell.y][cur_cell.x].set_state("closed")
+    mat[cur_cell.y][cur_cell.x].set_state("closed")
     # break condition. reached goal
     if cur_cell.h == 0:
         path.append(cur_cell)
@@ -88,6 +88,13 @@ def find_next_cell(cur_cell):
         next_cell = heapq.heappop(open_set)
     else:
         return False
+    waiting = True
+    while waiting:
+        # delete last frame
+        draw_grid(mat, CELL_SIZE)
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                waiting = False
 
     found_path = find_next_cell(next_cell)
 
@@ -100,7 +107,7 @@ def find_next_cell(cur_cell):
 
 
 def find_path():
-    global path, open_set,closed_set, mat
+    global path, open_set, closed_set, mat
     mat[cell.start.y][cell.start.x].calc_f(cell.start)
 
     found_path = find_next_cell(mat[cell.start.y][cell.start.x])
@@ -138,7 +145,7 @@ while run:
                         # start a* algorithm
                         setup_phase = False
                         # for cell in path:
-                            # mat[cell.y][cell.x].set_state("clear")
+                        # mat[cell.y][cell.x].set_state("clear")
                     case _:
                         fill_state = "clear"
 
@@ -150,7 +157,7 @@ while run:
             run = 0
     # main algorithm loop:
     if not setup_phase:
-        success=find_path()
+        success = find_path()
         if success:
             print("Found Path!")
         else:
