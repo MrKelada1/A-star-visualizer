@@ -84,7 +84,6 @@ def find_next_cell(cur_cell):
     # update neighbors values, add them to the open set.
     update_neighbors(cur_cell)
     # next cell is the one with the smallest f
-    next_cell = cell.Cell(-1, -1)
     if open_set:
         next_cell = heapq.heappop(open_set)
     else:
