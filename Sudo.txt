@@ -1,0 +1,11 @@
+
+player decides unwalkable cells
+player decides start
+player decides end
+
+each loop:
+    add neighbors to open set.
+    calculate f for each neighbor:
+        g = current cell g + distance from current cell
+        h = distance from end cell
+        f = g + h
