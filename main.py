@@ -1,4 +1,7 @@
+import sys
+
 import pygame
+from pygame.locals import *
 import cell
 import math, heapq
 
@@ -47,17 +50,20 @@ def get_fill_state(key) -> str:
 
 
 def setup_simulation():
-    global fill_state, run
+    global fill_state
     reset_cells()
     while True:
         # delete last frame
         draw_grid(mat, CELL_SIZE)
+        # update display
+        pygame.display.update()
         # check for event
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 # check for space to start simulation
                 if event.key == pygame.K_SPACE:
                     # finish setup
+                    print("finished setup")
                     return
 
                 # update fill state when appropriate button is pressed
@@ -68,8 +74,17 @@ def setup_simulation():
                 mouse_click_handler()
             # quit event
             if event.type == pygame.QUIT:
-                run = 0
-                return
+                pygame.quit()
+                sys.exit()
+
+
+def run_simulation():
+    print("running simulation")
+    success = find_path()
+    if success:
+        print("Found Path!")
+    else:
+        print("Path not found!")
 
 
 def mouse_click_handler():
@@ -99,6 +114,16 @@ def mouse_click_handler():
     # clear cell on mouse right click
     elif r_click:
         mat[y][x].set_state("clear")
+
+
+def wait():
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN and event.key == K_f:
+                return
 
 
 def update_neighbors(start_cell):
@@ -171,22 +196,9 @@ path = []
 open_set = []
 closed_set = []
 # main loop
-run = True
-setup_phase = True
 fill_state = "clear"
-while run:
-
+while True:
+    setup_simulation()
     # main algorithm loop:
-    if not setup_phase:
-        success = find_path()
-        if success:
-            print("Found Path!")
-        else:
-            print("Path not found!")
-
-        setup_phase = True
-    # update display
-    pygame.display.update()
-
-# quit app
-pygame.quit()
+    run_simulation()
+    wait()
