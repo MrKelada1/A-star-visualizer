@@ -23,6 +23,55 @@ def draw_grid(cells_mat, cell_size):
             pygame.draw.rect(screen, c.color, rect)
 
 
+def reset_cells():
+    global mat, path, open_set, closed_set
+    mat = [[cell.Cell(col, row) for col in range(COLS)] for row in range(ROWS)]
+    path.clear()
+    open_set.clear()
+    closed_set.clear()
+    cell.start = cell.Cell(-1, -1)
+    cell.goal = cell.Cell(-1, -1)
+
+
+def get_fill_state(key) -> str:
+    match key:
+        case pygame.K_s:
+            state = "start"
+        case pygame.K_g:
+            state = "goal"
+        case pygame.K_u:
+            state = "unwalkable"
+        case _:
+            state = "clear"
+    return state
+
+
+def setup_simulation():
+    global fill_state, run
+    reset_cells()
+    while True:
+        # delete last frame
+        draw_grid(mat, CELL_SIZE)
+        # check for event
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                # check for space to start simulation
+                if event.key == pygame.K_SPACE:
+                    # finish setup
+                    return
+
+                # update fill state when appropriate button is pressed
+                fill_state = get_fill_state(event.key)
+
+            # if left msb is clicked, set cell state
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_click_handler()
+            # quit event
+            if event.type == pygame.QUIT:
+                run = 0
+                return
+
+
 def mouse_click_handler():
     """
     Handles mouse clicks.
@@ -116,45 +165,17 @@ def find_path():
 
 # start grid
 # init cells matrix
+
 mat = [[cell.Cell(col, row) for col in range(COLS)] for row in range(ROWS)]
 path = []
 open_set = []
 closed_set = []
-
 # main loop
 run = True
 setup_phase = True
 fill_state = "clear"
 while run:
-    # delete last frame
-    draw_grid(mat, CELL_SIZE)
-    # check for event
-    for event in pygame.event.get():
-        # if in setup stage and mouse click or key press:
-        if setup_phase:
-            # if keyboard is pressed, update fill state
-            if event.type == pygame.KEYDOWN:
-                match event.key:
-                    case pygame.K_s:
-                        fill_state = "start"
-                    case pygame.K_g:
-                        fill_state = "goal"
-                    case pygame.K_u:
-                        fill_state = "unwalkable"
-                    case pygame.K_SPACE:
-                        # start a* algorithm
-                        setup_phase = False
-                        # for cell in path:
-                        # mat[cell.y][cell.x].set_state("clear")
-                    case _:
-                        fill_state = "clear"
 
-            # if left msb is clicked, set cell state
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_click_handler()
-        # quit event
-        if event.type == pygame.QUIT:
-            run = 0
     # main algorithm loop:
     if not setup_phase:
         success = find_path()
