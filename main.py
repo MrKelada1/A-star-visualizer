@@ -62,9 +62,12 @@ def setup_simulation():
             if event.type == pygame.KEYDOWN:
                 # check for space to start simulation
                 if event.key == pygame.K_SPACE:
-                    # finish setup
-                    print("finished setup")
-                    return
+                    if cell.start.x >= 0 and cell.goal.x >= 0:
+                        # finish setup
+                        print("finished setup")
+                        return
+                    else:
+                        print("invalid start/goal!")
 
                 # update fill state when appropriate button is pressed
                 fill_state = get_fill_state(event.key)
@@ -122,7 +125,7 @@ def wait():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYDOWN and event.key == K_f:
+            if event.type == KEYDOWN and event.key == pygame.K_SPACE:
                 return
 
 
@@ -162,13 +165,13 @@ def find_next_cell(cur_cell):
         next_cell = heapq.heappop(open_set)
     else:
         return False
-    waiting = True
-    while waiting:
-        # delete last frame
-        draw_grid(mat, CELL_SIZE)
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                waiting = False
+
+    # redraw cells
+    draw_grid(mat, CELL_SIZE)
+    pygame.display.update()
+
+    # wait for keypress
+    wait()
 
     found_path = find_next_cell(next_cell)
 
@@ -185,6 +188,8 @@ def find_path():
     mat[cell.start.y][cell.start.x].calc_f(cell.start)
 
     found_path = find_next_cell(mat[cell.start.y][cell.start.x])
+    draw_grid(mat, CELL_SIZE)
+    pygame.display.update()
     return found_path
 
 
