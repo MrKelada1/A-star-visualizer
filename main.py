@@ -138,8 +138,24 @@ def update_neighbors(start_cell):
                 neighbour = mat[y][x]
                 if neighbour.state != "unwalkable" and neighbour not in closed_set:
                     mat[y][x].calc_f(start_cell)
+                    mat[y][x].parent = start_cell
                     heapq.heappush(open_set, mat[y][x])
-                    mat[y][x].set_state("open")
+                    if neighbour.state != "goal":
+                        mat[y][x].set_state("open")
+
+
+def append_to_path(cur_cell):
+    x = cur_cell.x
+    y = cur_cell.y
+
+    if cur_cell == cell.start:
+        path.append(cur_cell)
+        mat[y][x].set_state("path")
+        return
+    append_to_path(cur_cell.parent)
+    path.append(cur_cell)
+    mat[y][x].set_state("path")
+    return
 
 
 def find_next_cell(cur_cell):
@@ -155,7 +171,7 @@ def find_next_cell(cur_cell):
     mat[cur_cell.y][cur_cell.x].set_state("closed")
     # break condition. reached goal
     if cur_cell.h == 0:
-        path.append(cur_cell)
+        append_to_path(cur_cell)
         return True
     # haven't reached goal yet:
     # update neighbors values, add them to the open set.
@@ -176,9 +192,6 @@ def find_next_cell(cur_cell):
     found_path = find_next_cell(next_cell)
 
     if found_path:
-        path.append(cur_cell)
-        if not (cur_cell.state == "start"):
-            mat[cur_cell.y][cur_cell.x].set_state("path")
         return True
     return False
 
