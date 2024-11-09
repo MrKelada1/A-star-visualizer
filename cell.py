@@ -3,7 +3,7 @@ import math
 
 
 class Cell:
-    def __init__(self, x, y, init_state="clear"):
+    def __init__(self, x, y, parent, init_state="clear"):
         # set array indices
         self.x = x
         self.y = y
@@ -15,8 +15,8 @@ class Cell:
         self.f = math.inf
         self.h = math.inf
         self.g = 0
-        # self.g = math.inf
-        # self.h = math.inf
+
+        self.parent = parent
 
     def __lt__(self, other):
         return self.f < other.f
