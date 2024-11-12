@@ -137,8 +137,8 @@ def update_neighbors(start_cell):
             if 0 <= x <= COLS - 1 and 0 <= y <= ROWS - 1:
                 neighbour = mat[y][x]
                 if neighbour.state != "unwalkable" and neighbour not in closed_set:
-                    mat[y][x].calc_f(start_cell)
                     mat[y][x].parent = start_cell
+                    mat[y][x].calc_f()
                     heapq.heappush(open_set, mat[y][x])
                     if neighbour.state != "goal":
                         mat[y][x].set_state("open")
@@ -178,6 +178,7 @@ def find_next_cell(cur_cell):
     update_neighbors(cur_cell)
     # next cell is the one with the smallest f
     if open_set:
+        heapq.heapify(open_set)
         next_cell = heapq.heappop(open_set)
     else:
         return False
@@ -198,7 +199,7 @@ def find_next_cell(cur_cell):
 
 def find_path():
     global path, open_set, closed_set, mat
-    mat[cell.start.y][cell.start.x].calc_f(cell.start)
+    mat[cell.start.y][cell.start.x].calc_f()
 
     found_path = find_next_cell(mat[cell.start.y][cell.start.x])
     draw_grid(mat, CELL_SIZE)

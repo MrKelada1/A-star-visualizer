@@ -24,22 +24,27 @@ class Cell:
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
 
-    def calc_f(self, cur_cell) -> int:
+    def calc_f(self) -> int:
         """
         Using the current cell's
-        :param cur_cell:
+        :param :
         :return:
         """
-        # calculate distance traveled from start to this cell
-        self.g = int(cur_cell.g + 10 * math.dist((cur_cell.x, cur_cell.y), (self.x, self.y)))
-        # calculate ideal distance to goal
-        dxh = abs(goal.x - self.x)
-        dyh = abs(goal.y - self.y)
-        straight = abs(dxh - dyh)
-        diag = max(dxh, dyh) - straight
-        self.h = 10 * straight + 14 * diag
-        # add both to get f value
-        self.f = self.g + self.h
+        if self.parent is None:
+            self.g = 0
+            self.h = math.inf
+            self.f = math.inf
+        else:
+            # calculate distance traveled from start to this cell
+            self.g = int(self.parent.g + 10 * math.dist((self.parent.x, self.parent.y), (self.x, self.y)))
+            # calculate ideal distance to goal
+            dxh = abs(goal.x - self.x)
+            dyh = abs(goal.y - self.y)
+            straight = abs(dxh - dyh)
+            diag = max(dxh, dyh) - straight
+            self.h = 10 * straight + 14 * diag
+            # add both to get f value
+            self.f = self.g + self.h
         return self.f
 
     def set_state(self, state):
@@ -49,7 +54,7 @@ class Cell:
             case "start":
                 self.color = pygame.Color("green")
                 self.g = 0
-                self.calc_f(self)
+                self.calc_f()
             case "goal":
                 self.color = pygame.Color("red")
             case "unwalkable":
@@ -68,8 +73,8 @@ class Cell:
                 print("tried assigning unknown state")
 
 
-start = Cell(0, 0, "clear")
-goal = Cell(0, 0, "clear")
+start = Cell(0, 0, init_state="clear")
+goal = Cell(0, 0, init_state="clear")
 
 start.set_state("start")
 goal.set_state("goal")
